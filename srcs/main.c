@@ -1,27 +1,50 @@
 #include "pipex.h"
 
-char	*get_path(char **envp)
+void	dup2_sub(int first, int second)
 {
-	int	i;
-
-	i = 0;
-	while (envp[i] != NULL)
-	{
-		if (ft_strncmp(envp[i], PATH, 5) == 0)
-			return (envp[i]);
-		i++;
-	}
-	return (NULL);
+	if (dup2(first, STDIN_FILENO) == -1)
+		perror_exit("dup2()", 1);
+	if (dup2(second, STDOUT_FILENO) == -1)
+		perror_exit("dup2()", 1);
 }
 
-//char	*get_cmd(char *path, char *cmd)
-//{
-	
-//}
+void	child(t_info *info)
+{
+	int	pid;
+
+	if (pipe(info->pipe_fds) == -1)
+		perror_exit("pipe()", 1);
+	pid = fork();
+	if (pid == 0)
+	{
+		if (info->idx == 0)
+			dup2_sub(info->infile_fd, info->pipe_fds[1]);
+		else if (info->idx == info->ac - 1)
+			dup2_sub(info->pipe_fds[0], info->outfile_fd);
+		else
+			dup2_sub(info->pipe_fds[0], info->pipe_fds[1]); // TODO: 확인 필요
+	}
+}
+
+void	init_info(t_info *info, int ac, char **av, char **envp)
+{
+	info->pipe_fds[0] = 0;
+	info->pipe_fds[1] = 0;
+	info->infile_fd = open(av[1], O_RDONLY);
+	if (info->infile_fd == -1)
+		perror_exit(ft_strjoin("pipex: ", av[1]), 1);
+	info->outfile_fd = open(av[ac- 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (info->outfile_fd == -1)
+		perror_exit(ft_strjoin("pipex: ", av[ac - 1]), 1);
+	info->idx = 0;
+	info->ac = ac;
+	info->av = av;
+	info->envp = envp;
+}
 
 int main(int ac, char **av, char **envp)
 {
-	(void) envp;
+	t_info	info;
 	char *infile;
 	char *outfile;
 	int	pipe_fds[2];
@@ -29,87 +52,66 @@ int main(int ac, char **av, char **envp)
 	int fd2;
 	int pid;
 	int wstatus;
-	char **cmd;
 
 	if (ac < 5)
-		return (-1);
-	infile = av[1];
-	outfile = av[4];
-
-	// 파이프를 연다
+		return (1);
+	init_info(&info, ac, av, envp);
 	if (pipe(pipe_fds) == -1)
 	{
 		perror("pipe()");
-		return (-1);
+		return (1);
 	}
-	// 자식 프로세스를 생성
+	fd1 = open(infile, O_RDONLY);
+	if (fd1 == -1)
+	{
+		perror(ft_strjoin("pipex: ", av[1]));
+		return (1);
+	}
 	pid = fork();
-	// 자식 프로세스일때
 	if (pid == 0)
 	{
-		// infile open
-		fd1 = open(infile, O_RDONLY | O_WRONLY);
-		if (fd1 == -1)
-		{
-			perror("open()");
-			return (-1);
-		}
-		// 안쓰는 pipe의 fd를 닫아줌
 		close(pipe_fds[0]);
-		// 표준입력을 fd1로 바꾼다
-		// 표준출력을 pipe_fds[1]로 바꾼다
 		if (dup2(fd1, STDIN_FILENO) == -1)
 		{
-			perror("dup2()");
-			return (-1);
+			perror("dup2()1");
+			return (1);
 		}
 		if (dup2(pipe_fds[1], STDOUT_FILENO) == -1)
 		{
-			perror("dup2()");
-			return (-1);
+			perror("dup2()2");
+			return (1);
 		}
-		// split으로 나눠서 [0]은 명령어, [1]은 옵션
-		cmd = ft_split(av[2], ' ');
-		// [0]에 해당하는 명령어와 같은 문자열을 PATH에서 찾고 1번쨰 인자로 넣기
-		// 명령어, 옵션, NULL로 이루어진 이차원 배열 2번째 인자로 넣기
-		if (execve("/usr/bin/grep", cmd, envp) == -1)
+		if (execute_cmd(ft_split(av[2], ' '), envp) == -1)
 		{
 			perror("execve()");
-			return (-1);
+			return (1);
 		}
 	}
-	// 부모 프로세스는 자식 프로세스가 종료될때까지 기다림
 	if (wait(&wstatus) == -1)
 	{
 		perror("wait()");
-		return (-1);
+		return (1);
 	}
-	// 안쓰는 pipe의 fd를 닫아줌
 	close(pipe_fds[1]);
-	// 표준입력을 pipe_fds[0]로 바꾼다
 	if (dup2(pipe_fds[0], STDIN_FILENO) == -1)
 	{
-		perror("dup2()");
-		return (-1);
+		perror("dup2()3");
+		return (1);
 	}
-	// outfile open
-	fd2 = open(outfile, O_CREAT);
+	fd2 = open(outfile, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd2 == -1)
 	{
 		perror("open()");
-		return (-1);
+		return (1);
 	}
-	// 표준출력을 outfile로 바꿔줌
 	if (dup2(fd2, STDOUT_FILENO) == -1)
 	{
-		perror("dup2()");
-		return (-1);
+		perror("dup2()4");
+		return (1);
 	}
-	// [3]에 해당하는 명령어와 옵션을 스플릿
-	cmd = ft_split(av[3], ' ');
-	if (execve("/usr/bin/wc", cmd, envp) == -1)
+	if (execute_cmd(ft_split(av[3], ' '), envp) == -1)
 	{
 		perror("execve()");
-		return (-1);
+		return (1);
 	}
 }

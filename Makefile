@@ -5,7 +5,7 @@ NAME:=pipex
 SRC_DIR:=srcs
 #BONUS_SRC_DIR:=bonus_srcs
 
-SRCS:=test.c
+SRCS:=main.c parse.c free.c exit.c
 
 #BONUS_SRC:=
 
@@ -38,7 +38,7 @@ clean :
 	make -C $(LIBFT_DIR) fclean
 
 fclean : clean
-	rm -f $(NAME) 
+	rm -f $(NAME)
 #$(BONUS)
 
 re : fclean all
