@@ -23,7 +23,7 @@ char	*make_cmd_path(char const *path, char const *cmd)
 		return (NULL);
 	ret_tmp = malloc((ft_strlen(path) + ft_strlen(cmd) + 2) * sizeof(char));
 	if (ret_tmp == NULL)
-		exit(1);
+		perror_exit("malloc()", 1);
 	ret_str = ret_tmp;
 	while (*path != '\0')
 	{
@@ -53,7 +53,7 @@ char	*get_valid_path(char **cmds, char *env_path)
 		exit(1);
 	paths = ft_split(env_path, ':');
 	if (paths == NULL)
-		exit(1);
+		perror_exit("malloc()", 1);
 	free(env_path);
 	i = -1;
 	while (paths[++i] != NULL)
@@ -72,14 +72,18 @@ char	*get_valid_path(char **cmds, char *env_path)
 	return (NULL);
 }
 
-int execute_cmd(char **cmds, char **envp)
+int execute_cmd(t_info *info)
 {
+	char	**cmds;
 	char	*env_path;
 	char	*valid_path;
 
-	env_path = get_env_path(envp);
+	env_path = get_env_path(info->envp);
 	if (env_path == NULL)
 		env_path = ft_strdup(BASIC_PATH);
+	cmds = ft_split(info->av[info->idx + 2], ' ');
+	if (cmds == NULL)
+		perror_exit("malloc()", 1);
 	valid_path = get_valid_path(cmds, env_path);
 	if (valid_path == NULL)
 	{
@@ -87,5 +91,5 @@ int execute_cmd(char **cmds, char **envp)
 		ft_putstr_fd(CMD_NOT_FOUND_ERR, 2);
 		exit(127);
 	}
-	return (execve(valid_path, cmds, envp));
+	return (execve(valid_path, cmds, info->envp));
 }
