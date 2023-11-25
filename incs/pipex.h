@@ -17,8 +17,8 @@ typedef struct s_info
 {
 	char	**av;
 	char	**envp;
-	int		pipe_fds[2][2];
-	int		*pids;
+	int		*pipe_fds;
+	pid_t	last_pid;
 	int		infile_fd;
 	int		outfile_fd;
 	int		idx;
@@ -34,6 +34,7 @@ int		ft_strncmp(const char *s1, const char *s2, size_t n);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strdup(const char *s1);
+char	*get_next_line(int fd);
 
 // parse
 char	*get_path(char **envp);
@@ -47,7 +48,16 @@ void	free_2d_array(char **arr);
 // exit
 void	perror_exit(char *str, int exit_code);
 
+// utils
+void	open_pipe(t_info *info);
+void	close_pipe(t_info *info);
+void	open_file(t_info *info);
+void	close_all_pipe(t_info *info);
+void	dup2_sub(int first, int second);
+
 // main
 int		wait_children(t_info *info);
+void	init_info(t_info *info, int ac, char **av, char **envp);
+void	child(t_info *info);
 
 #endif

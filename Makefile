@@ -5,7 +5,7 @@ NAME:=pipex
 SRC_DIR:=srcs
 #BONUS_SRC_DIR:=bonus_srcs
 
-SRCS:=main.c parse.c free.c exit.c
+SRCS:=main.c parse.c free.c exit.c utils.c
 
 #BONUS_SRC:=
 

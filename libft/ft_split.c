@@ -6,7 +6,7 @@
 /*   By: jongmlee <jongmlee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/10 12:22:47 by jongmlee          #+#    #+#             */
-/*   Updated: 2023/11/16 13:15:29 by jongmlee         ###   ########.fr       */
+/*   Updated: 2023/11/25 13:18:13 by jongmlee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static int	del(char **words, int idx)
 	return (1);
 }
 
-static char	*make_word(const char *str, char c)
+static char *make_word(const char *str, char c)
 {
 	size_t		i;
 	size_t		len;
@@ -49,7 +49,7 @@ static char	*make_word(const char *str, char c)
 	return (arr);
 }
 
-static size_t	count_word(const char *str, char c)
+static char	count_word(const char *str, char c)
 {
 	size_t	cnt;
 
