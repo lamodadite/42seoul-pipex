@@ -6,7 +6,7 @@
 /*   By: jongmlee <jongmlee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:33:44 by jongmlee          #+#    #+#             */
-/*   Updated: 2023/11/26 22:37:55 by jongmlee         ###   ########.fr       */
+/*   Updated: 2023/11/26 22:47:05 by jongmlee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,17 +51,15 @@ char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strdup(const char *s1);
 char	*get_next_line(int fd);
 
+// exit
+void	free_2d_array(char **arr);
+void	perror_exit(char *str, int exit_code);
+
 // parse
 char	*get_path(char **envp);
 char	*make_cmd_path(char const *path, char const *cmd);
 char	*get_valid_path(char **cmds, char *env_path);
 int		execute_cmd(t_info *info);
-
-// free
-void	free_2d_array(char **arr);
-
-// exit
-void	perror_exit(char *str, int exit_code);
 
 // utils
 void	open_pipe(t_info *info);

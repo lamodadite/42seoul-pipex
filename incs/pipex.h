@@ -6,7 +6,7 @@
 /*   By: jongmlee <jongmlee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:33:44 by jongmlee          #+#    #+#             */
-/*   Updated: 2023/11/26 22:37:51 by jongmlee         ###   ########.fr       */
+/*   Updated: 2023/11/26 22:47:25 by jongmlee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,8 @@ char	*make_cmd_path(char const *path, char const *cmd);
 char	*get_valid_path(char **cmds, char *env_path);
 int		execute_cmd(t_info *info);
 
-// free
-void	free_2d_array(char **arr);
-
 // exit
+void	free_2d_array(char **arr);
 void	perror_exit(char *str, int exit_code);
 
 // utils
