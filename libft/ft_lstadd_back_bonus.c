@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstadd_back_bonus.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jongmlee <jongmlee@student.42seoul.>       +#+  +:+       +#+        */
+/*   By: jongmlee <jongmlee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/11 16:28:03 by jongmlee          #+#    #+#             */
-/*   Updated: 2023/10/16 17:27:23 by jongmlee         ###   ########.fr       */
+/*   Updated: 2023/11/26 22:33:26 by jongmlee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	ft_lstadd_back(t_list **lst, t_list *new)
 {
 	t_list	*cur;
-	
+
 	if (lst == NULL || new == NULL)
 		return ;
 	if (*lst != NULL)
