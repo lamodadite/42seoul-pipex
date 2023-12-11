@@ -6,7 +6,7 @@
 /*   By: jongmlee <jongmlee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:25:31 by jongmlee          #+#    #+#             */
-/*   Updated: 2023/11/27 10:24:14 by jongmlee         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:49:45 by jongmlee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,12 @@ void	init_info(t_info *info, int ac, char **av, char **envp)
 	info->av = av;
 	info->envp = envp;
 	info->cur = 0;
-	info->pipe_fds = (int *)malloc((ac - 4) * 2 * sizeof(int));
-	if (info->pipe_fds == NULL)
-		perror_exit("malloc()", 1);
-	while (i < (ac - 4) * 2)
-		info->pipe_fds[i++] = -1;
+	while (i < 2)
+	{
+		info->pipe_fds[i][i] = -1;
+		info->pipe_fds[i][(i + 1) % 2] = -1;
+		i++;
+	}
 	info->is_heredoc = 0;
 	if (ft_strncmp(info->av[1], HEREDOC, ft_strlen(HEREDOC)) == 0)
 	{
@@ -58,13 +59,14 @@ int	wait_children(t_info *info)
 				exit_code = WTERMSIG(wstatus);
 		}
 	}
-	free(info->pipe_fds);
 	return (exit_code);
 }
 
 void	child(t_info *info)
 {
-	info->cur = info->idx * 2;
+	info->cur = info->idx % 2;
+	close(info->pipe_fds[info->cur][0]);
+	close(info->pipe_fds[info->cur][1]);
 	if (info->idx != info->ac - 4)
 		open_pipe(info);
 	info->last_pid = fork();
@@ -78,12 +80,12 @@ void	child(t_info *info)
 		open_file(info);
 		close_pipe(info);
 		if (info->idx == 0 || (info->idx == 1 && info->is_heredoc == 1))
-			dup2_sub(info->infile_fd, info->pipe_fds[info->cur + 1]);
+			dup2_sub(info->infile_fd, info->pipe_fds[info->cur][1]);
 		else if (info->idx == info->ac - 4)
-			dup2_sub(info->pipe_fds[info->cur - 2], info->outfile_fd);
+			dup2_sub(info->pipe_fds[!info->cur][0], info->outfile_fd);
 		else
-			dup2_sub(info->pipe_fds[info->cur - 2],
-				info->pipe_fds[info->cur + 1]);
+			dup2_sub(info->pipe_fds[!info->cur][0],
+				info->pipe_fds[info->cur][1]);
 		if (execute_cmd(info) == -1)
 			perror_exit("execve()", 1);
 	}
@@ -116,7 +118,6 @@ void	here_doc(t_info *info)
 int	main(int ac, char **av, char **envp)
 {
 	t_info	info;
-	int		exit_code;
 
 	if (ac < 5)
 		return (1);
@@ -124,6 +125,5 @@ int	main(int ac, char **av, char **envp)
 	while (++info.idx < ac - 3)
 		child(&info);
 	close_all_pipe(&info);
-	exit_code = wait_children(&info);
-	return (exit_code);
+	return (wait_children(&info));
 }

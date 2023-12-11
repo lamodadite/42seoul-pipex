@@ -6,7 +6,7 @@
 /*   By: jongmlee <jongmlee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:33:44 by jongmlee          #+#    #+#             */
-/*   Updated: 2023/12/11 14:52:51 by jongmlee         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:38:40 by jongmlee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ typedef struct s_info
 {
 	char	**av;
 	char	**envp;
-	int		*pipe_fds;
+	int		pipe_fds[2][2];
 	pid_t	last_pid;
 	int		infile_fd;
 	int		outfile_fd;

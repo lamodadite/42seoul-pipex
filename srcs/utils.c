@@ -6,7 +6,7 @@
 /*   By: jongmlee <jongmlee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:28:19 by jongmlee          #+#    #+#             */
-/*   Updated: 2023/11/26 22:32:39 by jongmlee         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:37:03 by jongmlee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	open_pipe(t_info *info)
 {
-	if (pipe(&info->pipe_fds[info->cur]) == -1)
+	if (pipe(info->pipe_fds[info->cur]) == -1)
 		perror_exit("pipe()", 1);
 }
 
@@ -23,16 +23,14 @@ void	close_pipe(t_info *info)
 	int	i;
 
 	i = -1;
-	while (++i < info->cur - 2)
-		close(info->pipe_fds[i]);
 	if (info->idx == 0 || (info->idx == 1 && info->is_heredoc == 1))
-		close(info->pipe_fds[info->cur]);
+		close(info->pipe_fds[info->cur][0]);
 	else if (info->idx == info->ac - 4)
-		close(info->pipe_fds[info->cur - 1]);
+		close(info->pipe_fds[!info->cur][1]);
 	else
 	{
-		close(info->pipe_fds[info->cur - 1]);
-		close(info->pipe_fds[info->cur]);
+		close(info->pipe_fds[!info->cur][1]);
+		close(info->pipe_fds[info->cur][0]);
 	}
 }
 
@@ -65,14 +63,10 @@ void	open_file(t_info *info)
 
 void	close_all_pipe(t_info *info)
 {
-	int	i;
-
-	i = 0;
-	while (i < (info->ac - 4) * 2)
-	{
-		close(info->pipe_fds[i]);
-		i++;
-	}
+	close(info->pipe_fds[0][0]);
+	close(info->pipe_fds[0][1]);
+	close(info->pipe_fds[1][0]);
+	close(info->pipe_fds[1][1]);
 }
 
 void	dup2_sub(int first, int second)
