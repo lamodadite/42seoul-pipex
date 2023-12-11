@@ -6,7 +6,7 @@
 /*   By: jongmlee <jongmlee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:27:54 by jongmlee          #+#    #+#             */
-/*   Updated: 2023/11/26 22:32:35 by jongmlee         ###   ########.fr       */
+/*   Updated: 2023/12/11 14:47:55 by jongmlee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ int	execute_cmd(t_info *info)
 	env_path = get_env_path(info->envp);
 	if (env_path == NULL)
 		env_path = ft_strdup(BASIC_PATH);
-	cmds = ft_split(info->av[info->idx + 2], ' ');
+	cmds = ms_split(info->av[info->idx + 2]);
 	if (cmds == NULL)
 		perror_exit("malloc()", 1);
 	valid_path = get_valid_path(cmds, env_path);

@@ -6,7 +6,7 @@
 /*   By: jongmlee <jongmlee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:33:44 by jongmlee          #+#    #+#             */
-/*   Updated: 2023/11/26 22:47:25 by jongmlee         ###   ########.fr       */
+/*   Updated: 2023/12/11 14:52:51 by jongmlee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strdup(const char *s1);
 char	*get_next_line(int fd);
+void	*ft_calloc(size_t count, size_t size);
 
 // parse
 char	*get_path(char **envp);
@@ -73,5 +74,11 @@ int		wait_children(t_info *info);
 void	init_info(t_info *info, int ac, char **av, char **envp);
 void	child(t_info *info);
 void	here_doc(t_info *info);
+
+char	**ms_split(char *cmd);
+int	ms_split_input(char *toss, char **cmd, char *oper);
+int	ms_split_first(char *toss, char **cmd, char *oper);
+int	ms_split_plus(char *toss, int *i, char **cmd);
+int	ms_init(char c, char *s);
 
 #endif

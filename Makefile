@@ -4,8 +4,8 @@ BONUS:=pipex_bonus
 SRC_DIR:=srcs
 BONUS_SRC_DIR:=bonus_srcs
 
-SRCS:=main.c parse.c exit.c utils.c
-BONUS_SRC:=main_bonus.c parse_bonus.c exit_bonus.c utils_bonus.c
+SRCS:=main.c parse.c exit.c utils.c ms_split.c
+BONUS_SRC:=main_bonus.c parse_bonus.c exit_bonus.c utils_bonus.c ms_split_bonus.c
 
 INC_DIR:=incs
 INCS:=pipex.h pipex_bonus.h
@@ -30,7 +30,7 @@ $(BONUS) : $(addprefix $(BONUS_SRC_DIR)/, $(BONUS_SRC)) $(addprefix $(INC_DIR)/,
 
 all : $(NAME)
 
-bonus : $(BONUS)
+bonus : $(NAME)
 
 clean :
 	make -C $(LIBFT_DIR) fclean
